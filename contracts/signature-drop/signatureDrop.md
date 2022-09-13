@@ -4,7 +4,7 @@ This is a live document that explains what the [thirdweb](https://thirdweb.com/
 
 The document is written for technical and non-technical readers. To ask further questions about thirdweb’s `SignatureDrop` contract, please join the [thirdweb discord](https://discord.gg/thirdweb) or create a [github issue](https://github.com/thirdweb-dev/contracts/issues).
 
----
+------------------
 
 ## Background
 
