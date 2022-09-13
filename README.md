@@ -1,6 +1,6 @@
 
 First install the relevant dependencies of the project:
-.................
+...
 
 ```bash
 yarn
