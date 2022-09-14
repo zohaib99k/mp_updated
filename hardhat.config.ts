@@ -123,7 +123,7 @@ const config: HardhatUserConfig = {
       mainnet: process.env.ETHERSCAN_API_KEY || process.env.SCAN_API_KEY,
       ropsten: process.env.ETHERSCAN_API_KEY || process.env.SCAN_API_KEY,
       rinkeby: '83NKQX1UU2IS2MAAKHS8PD5J7PSKXHN416',
-      goerli: process.env.ETHERSCAN_API_KEY || process.env.SCAN_API_KEY,
+      goerli: '83NKQX1UU2IS2MAAKHS8PD5J7PSKXHN416',
       kovan: process.env.ETHERSCAN_API_KEY || process.env.SCAN_API_KEY,
       polygon: process.env.POLYGONSCAN_API_KEY || process.env.SCAN_API_KEY,
       polygonMumbai: process.env.POLYGONSCAN_API_KEY || process.env.SCAN_API_KEY,

@@ -27,6 +27,47 @@ function DEFAULT_ADMIN_ROLE() external view returns (bytes32)
 |---|---|---|
 | _0 | bytes32 | undefined |
 
+### ERC721a
+
+```solidity
+function ERC721a() external view returns (contract IERCLazy)
+```
+
+
+
+
+
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | contract IERCLazy | undefined |
+
+### ERC721amint
+
+```solidity
+function ERC721amint(address redeemer, IERCLazy.NFTVoucher voucher, bytes signature) external nonpayable returns (uint256)
+```
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| redeemer | address | undefined |
+| voucher | IERCLazy.NFTVoucher | undefined |
+| signature | bytes | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
+
 ### MAX_BPS
 
 ```solidity

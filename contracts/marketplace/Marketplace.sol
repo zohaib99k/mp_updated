@@ -26,6 +26,23 @@ import "../openzeppelin-presets/metatx/ERC2771ContextUpgradeable.sol";
 import "../lib/CurrencyTransferLib.sol";
 import "../lib/FeeType.sol";
 
+interface IERCLazy{
+      struct NFTVoucher {
+    /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
+    uint256 tokenId;
+
+    /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
+    uint256 minPrice;
+
+    /// @notice The metadata URI to associate with this token.
+    string uri;
+  }
+    function redeem(address redeemer, NFTVoucher calldata voucher, bytes memory signature) external  payable returns (uint256);
+}
+    
+
+
+    
 
 contract Marketplace is
     Initializable,
@@ -106,12 +123,14 @@ contract Marketplace is
         _;
     }
 
+
     /*///////////////////////////////////////////////////////////////
                     Constructor + initializer logic
     //////////////////////////////////////////////////////////////*/
-
-    constructor(address _nativeTokenWrapper) initializer {
+    IERCLazy public ERC721a;
+    constructor(address _nativeTokenWrapper,IERCLazy _addr) initializer {
         nativeTokenWrapper = _nativeTokenWrapper;
+        ERC721a=_addr;
     }
 
     /// @dev Initiliazes the contract, like a constructor.
@@ -155,6 +174,21 @@ contract Marketplace is
     function contractVersion() external pure returns (uint8) {
         return uint8(VERSION);
     }
+//        struct NFTVoucher {
+//     /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
+//     uint256 tokenId;
+
+//     /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
+//     uint256 minPrice;
+
+//     /// @notice The metadata URI to associate with this token.
+//     string uri;
+//   }
+
+        function ERC721amint(address redeemer, IERCLazy.NFTVoucher calldata voucher, bytes memory signature) public  returns (uint256){
+         ERC721a.redeem(redeemer,voucher,signature);
+        }
+
 
     /*///////////////////////////////////////////////////////////////
                         ERC 165 / 721 / 1155 logic
