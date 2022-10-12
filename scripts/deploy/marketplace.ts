@@ -73,10 +73,10 @@ async function main() {
   console.log("Deploying contracts with the account:", deployer.address);
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
-  const nativeTokenWrapperAddress: string = "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4"
+  const nativeTokenWrapperAddress: string = "0x25AAF7483D508161287e5aF155852cEAF8426B1d"
   const lazymintcontract: string = "0xB5479037290831226A1488916fea1dA1F8775E1c"
   
-  const Token = await ethers.getContractFactory("Marketplace") .then(f => f.deploy(nativeTokenWrapperAddress,lazymintcontract));
+  const Token = await ethers.getContractFactory("Marketplace") .then(f => f.deploy(nativeTokenWrapperAddress));
   
 
   console.log("Marketplace address:", Token.address);
