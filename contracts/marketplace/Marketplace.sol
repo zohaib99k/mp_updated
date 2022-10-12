@@ -5,15 +5,9 @@ pragma solidity ^0.8.11;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
-
-import "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol";
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
@@ -21,38 +15,17 @@ import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 
 import { IMarketplace } from "../interfaces/marketplace/IMarketplace.sol";
 
-import "../openzeppelin-presets/metatx/ERC2771ContextUpgradeable.sol";
 
 import "../lib/CurrencyTransferLib.sol";
 import "../lib/FeeType.sol";
-
-interface IERCLazy{
-      struct NFTVoucher {
-    /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
-    uint256 tokenId;
-
-    /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
-    uint256 minPrice;
-
-    /// @notice The metadata URI to associate with this token.
-    string uri;
-  }
-    function redeem(address redeemer, NFTVoucher calldata voucher, bytes memory signature) external  payable returns (uint256);
-}
-    
-
-
-    
+import"./LazyERC721.sol";
 
 contract Marketplace is
     Initializable,
     IMarketplace,
     ReentrancyGuardUpgradeable,
-    ERC2771ContextUpgradeable,
     MulticallUpgradeable,
-    AccessControlEnumerableUpgradeable,
-    IERC721ReceiverUpgradeable,
-    IERC1155ReceiverUpgradeable
+    LazyNFT
 {
     /*///////////////////////////////////////////////////////////////
                             State variables
@@ -123,27 +96,24 @@ contract Marketplace is
         _;
     }
 
-
     /*///////////////////////////////////////////////////////////////
                     Constructor + initializer logic
     //////////////////////////////////////////////////////////////*/
-    IERCLazy public ERC721a;
-    constructor(address _nativeTokenWrapper,IERCLazy _addr) initializer {
+
+    constructor(address _nativeTokenWrapper,address payable minter) initializer LazyNFT(minter){
         nativeTokenWrapper = _nativeTokenWrapper;
-        ERC721a=_addr;
     }
 
     /// @dev Initiliazes the contract, like a constructor.
     function initialize(
         address _defaultAdmin,
         string memory _contractURI,
-        address[] memory _trustedForwarders,
         address _platformFeeRecipient,
         uint256 _platformFeeBps
     ) external initializer {
         // Initialize inherited contracts, most base-like -> most derived.
         __ReentrancyGuard_init();
-        __ERC2771Context_init(_trustedForwarders);
+
 
         // Initialize this contract's state.
         timeBuffer = 15 minutes;
@@ -174,21 +144,6 @@ contract Marketplace is
     function contractVersion() external pure returns (uint8) {
         return uint8(VERSION);
     }
-//        struct NFTVoucher {
-//     /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
-//     uint256 tokenId;
-
-//     /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
-//     uint256 minPrice;
-
-//     /// @notice The metadata URI to associate with this token.
-//     string uri;
-//   }
-
-        function ERC721amint(address redeemer, IERCLazy.NFTVoucher calldata voucher, bytes memory signature) public  returns (uint256){
-         ERC721a.redeem(redeemer,voucher,signature);
-        }
-
 
     /*///////////////////////////////////////////////////////////////
                         ERC 165 / 721 / 1155 logic
@@ -200,7 +155,7 @@ contract Marketplace is
         uint256,
         uint256,
         bytes memory
-    ) public virtual override returns (bytes4) {
+    ) public virtual  returns (bytes4) {
         return this.onERC1155Received.selector;
     }
 
@@ -210,7 +165,7 @@ contract Marketplace is
         uint256[] memory,
         uint256[] memory,
         bytes memory
-    ) public virtual override returns (bytes4) {
+    ) public virtual  returns (bytes4) {
         return this.onERC1155BatchReceived.selector;
     }
 
@@ -219,7 +174,7 @@ contract Marketplace is
         address,
         uint256,
         bytes calldata
-    ) external pure override returns (bytes4) {
+    ) external pure  returns (bytes4) {
         return this.onERC721Received.selector;
     }
 
@@ -227,12 +182,12 @@ contract Marketplace is
         public
         view
         virtual
-        override(AccessControlEnumerableUpgradeable, IERC165Upgradeable)
+        override(LazyNFT)
         returns (bool)
     {
         return
             interfaceId == type(IERC1155ReceiverUpgradeable).interfaceId ||
-            interfaceId == type(IERC721ReceiverUpgradeable).interfaceId ||
+            interfaceId == type(IERC721Receiver).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
@@ -723,7 +678,7 @@ contract Marketplace is
         if (_listing.tokenType == TokenType.ERC1155) {
             IERC1155Upgradeable(_listing.assetContract).safeTransferFrom(_from, _to, _listing.tokenId, _quantity, "");
         } else if (_listing.tokenType == TokenType.ERC721) {
-            IERC721Upgradeable(_listing.assetContract).safeTransferFrom(_from, _to, _listing.tokenId, "");
+            IERC721(_listing.assetContract).safeTransferFrom(_from, _to, _listing.tokenId, "");
         }
     }
 
@@ -808,9 +763,9 @@ contract Marketplace is
                 IERC1155Upgradeable(_assetContract).isApprovedForAll(_tokenOwner, market);
         } else if (_tokenType == TokenType.ERC721) {
             isValid =
-                IERC721Upgradeable(_assetContract).ownerOf(_tokenId) == _tokenOwner &&
-                (IERC721Upgradeable(_assetContract).getApproved(_tokenId) == market ||
-                    IERC721Upgradeable(_assetContract).isApprovedForAll(_tokenOwner, market));
+                IERC721(_assetContract).ownerOf(_tokenId) == _tokenOwner &&
+                (IERC721(_assetContract).getApproved(_tokenId) == market ||
+                    IERC721(_assetContract).isApprovedForAll(_tokenOwner, market));
         }
 
         require(isValid, "!BALNFT");
@@ -873,7 +828,7 @@ contract Marketplace is
     function getTokenType(address _assetContract) internal view returns (TokenType tokenType) {
         if (IERC165Upgradeable(_assetContract).supportsInterface(type(IERC1155Upgradeable).interfaceId)) {
             tokenType = TokenType.ERC1155;
-        } else if (IERC165Upgradeable(_assetContract).supportsInterface(type(IERC721Upgradeable).interfaceId)) {
+        } else if (IERC165(_assetContract).supportsInterface(type(IERC721).interfaceId)) {
             tokenType = TokenType.ERC721;
         } else {
             revert("token must be ERC1155 or ERC721.");
@@ -921,23 +876,4 @@ contract Marketplace is
                             Miscellaneous
     //////////////////////////////////////////////////////////////*/
 
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (address sender)
-    {
-        return ERC2771ContextUpgradeable._msgSender();
-    }
-
-    function _msgData()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return ERC2771ContextUpgradeable._msgData();
-    }
 }
