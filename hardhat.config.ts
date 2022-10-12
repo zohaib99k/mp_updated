@@ -122,8 +122,8 @@ const config: HardhatUserConfig = {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY || process.env.SCAN_API_KEY,
       ropsten: process.env.ETHERSCAN_API_KEY || process.env.SCAN_API_KEY,
-      rinkeby: '83NKQX1UU2IS2MAAKHS8PD5J7PSKXHN416',
-      goerli: '83NKQX1UU2IS2MAAKHS8PD5J7PSKXHN416',
+      rinkeby: 'Y3ZVQB29YGHBBFQ1JY1Q4Q21M6XNY7QCZP',
+      goerli: 'Y3ZVQB29YGHBBFQ1JY1Q4Q21M6XNY7QCZP',
       kovan: process.env.ETHERSCAN_API_KEY || process.env.SCAN_API_KEY,
       polygon: process.env.POLYGONSCAN_API_KEY || process.env.SCAN_API_KEY,
       polygonMumbai: process.env.POLYGONSCAN_API_KEY || process.env.SCAN_API_KEY,
@@ -136,7 +136,7 @@ const config: HardhatUserConfig = {
       arbitrumOne: process.env.ARBITRUM_SCAN_API_KEY || process.env.SCAN_API_KEY,
       arbitrumTestnet: process.env.ARBITRUM_SCAN_API_KEY || process.env.SCAN_API_KEY,
       bsc: process.env.BINANCE_SCAN_API_KEY || process.env.SCAN_API_KEY,
-      bscTestnet: process.env.BINANCE_SCAN_API_KEY || process.env.SCAN_API_KEY,
+      bscTestnet: 'Y3ZVQB29YGHBBFQ1JY1Q4Q21M6XNY7QCZP',
     },
   },
   gasReporter: {

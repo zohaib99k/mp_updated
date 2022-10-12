@@ -44,23 +44,6 @@ function MAX_BPS() external view returns (uint64)
 |---|---|---|
 | _0 | uint64 | undefined |
 
-### MINTER_ROLE
-
-```solidity
-function MINTER_ROLE() external view returns (bytes32)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | bytes32 | undefined |
-
 ### acceptOffer
 
 ```solidity
@@ -79,62 +62,6 @@ function acceptOffer(uint256 _listingId, address _offeror, address _currency, ui
 | _offeror | address | undefined |
 | _currency | address | undefined |
 | _pricePerToken | uint256 | undefined |
-
-### approve
-
-```solidity
-function approve(address to, uint256 tokenId) external nonpayable
-```
-
-
-
-*See {IERC721-approve}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| to | address | undefined |
-| tokenId | uint256 | undefined |
-
-### availableToWithdraw
-
-```solidity
-function availableToWithdraw() external view returns (uint256)
-```
-
-
-
-
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
-
-### balanceOf
-
-```solidity
-function balanceOf(address owner) external view returns (uint256)
-```
-
-
-
-*See {IERC721-balanceOf}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| owner | address | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | undefined |
 
 ### bidBufferBps
 
@@ -273,28 +200,6 @@ function createListing(IMarketplace.ListingParameters _params) external nonpayab
 |---|---|---|
 | _params | IMarketplace.ListingParameters | undefined |
 
-### getApproved
-
-```solidity
-function getApproved(uint256 tokenId) external view returns (address)
-```
-
-
-
-*See {IERC721-getApproved}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| tokenId | uint256 | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | undefined |
-
 ### getPlatformFeeInfo
 
 ```solidity
@@ -334,6 +239,51 @@ function getRoleAdmin(bytes32 role) external view returns (bytes32)
 | Name | Type | Description |
 |---|---|---|
 | _0 | bytes32 | undefined |
+
+### getRoleMember
+
+```solidity
+function getRoleMember(bytes32 role, uint256 index) external view returns (address)
+```
+
+
+
+*Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| role | bytes32 | undefined |
+| index | uint256 | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | address | undefined |
+
+### getRoleMemberCount
+
+```solidity
+function getRoleMemberCount(bytes32 role) external view returns (uint256)
+```
+
+
+
+*Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.*
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| role | bytes32 | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | uint256 | undefined |
 
 ### grantRole
 
@@ -378,7 +328,7 @@ function hasRole(bytes32 role, address account) external view returns (bool)
 ### initialize
 
 ```solidity
-function initialize(address _defaultAdmin, string _contractURI, address _platformFeeRecipient, uint256 _platformFeeBps) external nonpayable
+function initialize(address _defaultAdmin, string _contractURI, address[] _trustedForwarders, address _platformFeeRecipient, uint256 _platformFeeBps) external nonpayable
 ```
 
 
@@ -391,25 +341,42 @@ function initialize(address _defaultAdmin, string _contractURI, address _platfor
 |---|---|---|
 | _defaultAdmin | address | undefined |
 | _contractURI | string | undefined |
+| _trustedForwarders | address[] | undefined |
 | _platformFeeRecipient | address | undefined |
 | _platformFeeBps | uint256 | undefined |
 
-### isApprovedForAll
+### isTrustedForwarder
 
 ```solidity
-function isApprovedForAll(address owner, address operator) external view returns (bool)
+function isTrustedForwarder(address forwarder) external view returns (bool)
 ```
 
 
 
-*See {IERC721-isApprovedForAll}.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| owner | address | undefined |
-| operator | address | undefined |
+| forwarder | address | undefined |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| _0 | bool | undefined |
+
+### listable
+
+```solidity
+function listable() external view returns (bool)
+```
+
+
+
+
+
 
 #### Returns
 
@@ -425,7 +392,7 @@ function listings(uint256) external view returns (uint256 listingId, address tok
 
 
 
-*Mapping from uid of listing =&gt; listing info.*
+*Mapping from uid of listing =&gt; listing info.  *
 
 #### Parameters
 
@@ -471,23 +438,6 @@ function multicall(bytes[] data) external nonpayable returns (bytes[] results)
 | Name | Type | Description |
 |---|---|---|
 | results | bytes[] | undefined |
-
-### name
-
-```solidity
-function name() external view returns (string)
-```
-
-
-
-*See {IERC721Metadata-name}.*
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | string | undefined |
 
 ### offer
 
@@ -614,27 +564,21 @@ function onERC721Received(address, address, uint256, bytes) external pure return
 |---|---|---|
 | _0 | bytes4 | undefined |
 
-### ownerOf
+### publicListing
 
 ```solidity
-function ownerOf(uint256 tokenId) external view returns (address)
+function publicListing(bool _state) external nonpayable
 ```
 
 
 
-*See {IERC721-ownerOf}.*
+
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| tokenId | uint256 | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | undefined |
+| _state | bool | undefined |
 
 ### renounceRole
 
@@ -669,60 +613,6 @@ function revokeRole(bytes32 role, address account) external nonpayable
 |---|---|---|
 | role | bytes32 | undefined |
 | account | address | undefined |
-
-### safeTransferFrom
-
-```solidity
-function safeTransferFrom(address from, address to, uint256 tokenId) external nonpayable
-```
-
-
-
-*See {IERC721-safeTransferFrom}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| from | address | undefined |
-| to | address | undefined |
-| tokenId | uint256 | undefined |
-
-### safeTransferFrom
-
-```solidity
-function safeTransferFrom(address from, address to, uint256 tokenId, bytes _data) external nonpayable
-```
-
-
-
-*See {IERC721-safeTransferFrom}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| from | address | undefined |
-| to | address | undefined |
-| tokenId | uint256 | undefined |
-| _data | bytes | undefined |
-
-### setApprovalForAll
-
-```solidity
-function setApprovalForAll(address operator, bool approved) external nonpayable
-```
-
-
-
-*See {IERC721-setApprovalForAll}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| operator | address | undefined |
-| approved | bool | undefined |
 
 ### setAuctionBuffers
 
@@ -796,23 +686,6 @@ function supportsInterface(bytes4 interfaceId) external view returns (bool)
 |---|---|---|
 | _0 | bool | undefined |
 
-### symbol
-
-```solidity
-function symbol() external view returns (string)
-```
-
-
-
-*See {IERC721Metadata-symbol}.*
-
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | string | undefined |
-
 ### timeBuffer
 
 ```solidity
@@ -830,28 +703,6 @@ function timeBuffer() external view returns (uint64)
 |---|---|---|
 | _0 | uint64 | undefined |
 
-### tokenURI
-
-```solidity
-function tokenURI(uint256 tokenId) external view returns (string)
-```
-
-
-
-*See {IERC721Metadata-tokenURI}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| tokenId | uint256 | undefined |
-
-#### Returns
-
-| Name | Type | Description |
-|---|---|---|
-| _0 | string | undefined |
-
 ### totalListings
 
 ```solidity
@@ -868,24 +719,6 @@ function totalListings() external view returns (uint256)
 | Name | Type | Description |
 |---|---|---|
 | _0 | uint256 | undefined |
-
-### transferFrom
-
-```solidity
-function transferFrom(address from, address to, uint256 tokenId) external nonpayable
-```
-
-
-
-*See {IERC721-transferFrom}.*
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| from | address | undefined |
-| to | address | undefined |
-| tokenId | uint256 | undefined |
 
 ### updateListing
 
@@ -936,56 +769,9 @@ function winningBid(uint256) external view returns (uint256 listingId, address o
 | pricePerToken | uint256 | undefined |
 | expirationTimestamp | uint256 | undefined |
 
-### withdraw
-
-```solidity
-function withdraw() external nonpayable
-```
-
-
-
-
-
-
 
 
 ## Events
-
-### Approval
-
-```solidity
-event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| owner `indexed` | address | undefined |
-| approved `indexed` | address | undefined |
-| tokenId `indexed` | uint256 | undefined |
-
-### ApprovalForAll
-
-```solidity
-event ApprovalForAll(address indexed owner, address indexed operator, bool approved)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| owner `indexed` | address | undefined |
-| operator `indexed` | address | undefined |
-| approved  | bool | undefined |
 
 ### AuctionBuffersUpdated
 
@@ -1189,24 +975,6 @@ event RoleRevoked(bytes32 indexed role, address indexed account, address indexed
 | role `indexed` | bytes32 | undefined |
 | account `indexed` | address | undefined |
 | sender `indexed` | address | undefined |
-
-### Transfer
-
-```solidity
-event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)
-```
-
-
-
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| from `indexed` | address | undefined |
-| to `indexed` | address | undefined |
-| tokenId `indexed` | uint256 | undefined |
 
 
 
